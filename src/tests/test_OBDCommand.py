@@ -20,7 +20,9 @@ def test_constructor():
 
     # a case where "fast", and "supported" were set explicitly
     #                 name       description        cmd  bytes decoder ECU         fast
-    cmd = OBDCommand("Test 2", "example OBD command", b"0123", 2, noop, ECU.ENGINE, True)
+    cmd = OBDCommand(
+        "Test 2", "example OBD command", b"0123", 2, noop, ECU.ENGINE, True
+    )
     assert cmd.fast is True
 
 
@@ -39,8 +41,12 @@ def test_clone():
 
 
 def test_call():
-    p = SAE_J1850_PWM(["48 6B 10 41 00 FF FF FF FF AA"])  # train the ecu_map to identify the engine
-    messages = p(["48 6B 10 41 00 BE 1F B8 11 AA"])  # parse valid data into response object
+    p = SAE_J1850_PWM(
+        ["48 6B 10 41 00 FF FF FF FF AA"]
+    )  # train the ecu_map to identify the engine
+    messages = p(
+        ["48 6B 10 41 00 BE 1F B8 11 AA"]
+    )  # parse valid data into response object
 
     print(messages[0].data)
 

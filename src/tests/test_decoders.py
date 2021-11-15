@@ -20,8 +20,8 @@ FLOAT_EQUALS_TOLERANCE = 0.025
 
 # comparison for pint floating point values
 def float_equals(va, vb):
-    units_match = (va.u == vb.u)
-    values_match = (abs(va.magnitude - vb.magnitude) < FLOAT_EQUALS_TOLERANCE)
+    units_match = va.u == vb.u
+    values_match = abs(va.magnitude - vb.magnitude) < FLOAT_EQUALS_TOLERANCE
     return values_match and units_match
 
 
@@ -71,7 +71,9 @@ def test_current_centered():
     assert d.current_centered(m("4100" + "00008000")) == 0.0 * Unit.milliampere
     assert d.current_centered(m("4100" + "ABCD8000")) == 0.0 * Unit.milliampere
     # first 2 bytes are unused (should be disregarded)
-    assert float_equals(d.current_centered(m("4100" + "0000FFFF")), 128.0 * Unit.milliampere)
+    assert float_equals(
+        d.current_centered(m("4100" + "0000FFFF")), 128.0 * Unit.milliampere
+    )
 
 
 def test_sensor_voltage():
@@ -128,8 +130,9 @@ def test_inject_timing():
 def test_max_maf():
     assert d.max_maf(m("4100" + "00000000")) == 0 * Unit.grams_per_second
     assert d.max_maf(m("4100" + "FF000000")) == 2550 * Unit.grams_per_second
-    assert d.max_maf(
-        m("4100" + "00ABCDEF")) == 0 * Unit.grams_per_second  # last 3 bytes are unused (should be disregarded)
+    assert (
+        d.max_maf(m("4100" + "00ABCDEF")) == 0 * Unit.grams_per_second
+    )  # last 3 bytes are unused (should be disregarded)
 
 
 def test_fuel_rate():
@@ -138,10 +141,15 @@ def test_fuel_rate():
 
 
 def test_fuel_status():
-    assert d.fuel_status(m("4100" + "0100")) == ("Open loop due to insufficient engine temperature", "")
+    assert d.fuel_status(m("4100" + "0100")) == (
+        "Open loop due to insufficient engine temperature",
+        "",
+    )
     assert d.fuel_status(m("4100" + "0800")) == ("Open loop due to system failure", "")
-    assert d.fuel_status(m("4100" + "0808")) == ("Open loop due to system failure",
-                                                 "Open loop due to system failure")
+    assert d.fuel_status(m("4100" + "0808")) == (
+        "Open loop due to system failure",
+        "Open loop due to system failure",
+    )
     assert d.fuel_status(m("4100" + "0008")) == ("", "Open loop due to system failure")
     assert d.fuel_status(m("4100" + "0000")) is None
     assert d.fuel_status(m("4100" + "0300")) is None
@@ -162,22 +170,65 @@ def test_fuel_type():
 
 def test_obd_compliance():
     assert d.obd_compliance(m("4100" + "00")) == "Undefined"
-    assert d.obd_compliance(m("4100" + "21")) == "Heavy Duty Euro OBD Stage VI (HD EOBD-IV)"
+    assert (
+        d.obd_compliance(m("4100" + "21"))
+        == "Heavy Duty Euro OBD Stage VI (HD EOBD-IV)"
+    )
     assert d.obd_compliance(m("4100" + "22")) is None
 
 
 def test_o2_sensors():
-    assert d.o2_sensors(m("4100" + "00")) == ((), (False, False, False, False), (False, False, False, False))
-    assert d.o2_sensors(m("4100" + "01")) == ((), (False, False, False, False), (False, False, False, True))
-    assert d.o2_sensors(m("4100" + "0F")) == ((), (False, False, False, False), (True, True, True, True))
-    assert d.o2_sensors(m("4100" + "F0")) == ((), (True, True, True, True), (False, False, False, False))
+    assert d.o2_sensors(m("4100" + "00")) == (
+        (),
+        (False, False, False, False),
+        (False, False, False, False),
+    )
+    assert d.o2_sensors(m("4100" + "01")) == (
+        (),
+        (False, False, False, False),
+        (False, False, False, True),
+    )
+    assert d.o2_sensors(m("4100" + "0F")) == (
+        (),
+        (False, False, False, False),
+        (True, True, True, True),
+    )
+    assert d.o2_sensors(m("4100" + "F0")) == (
+        (),
+        (True, True, True, True),
+        (False, False, False, False),
+    )
 
 
 def test_o2_sensors_alt():
-    assert d.o2_sensors_alt(m("4100" + "00")) == ((), (False, False), (False, False), (False, False), (False, False))
-    assert d.o2_sensors_alt(m("4100" + "01")) == ((), (False, False), (False, False), (False, False), (False, True))
-    assert d.o2_sensors_alt(m("4100" + "0F")) == ((), (False, False), (False, False), (True, True), (True, True))
-    assert d.o2_sensors_alt(m("4100" + "F0")) == ((), (True, True), (True, True), (False, False), (False, False))
+    assert d.o2_sensors_alt(m("4100" + "00")) == (
+        (),
+        (False, False),
+        (False, False),
+        (False, False),
+        (False, False),
+    )
+    assert d.o2_sensors_alt(m("4100" + "01")) == (
+        (),
+        (False, False),
+        (False, False),
+        (False, False),
+        (False, True),
+    )
+    assert d.o2_sensors_alt(m("4100" + "0F")) == (
+        (),
+        (False, False),
+        (False, False),
+        (True, True),
+        (True, True),
+    )
+    assert d.o2_sensors_alt(m("4100" + "F0")) == (
+        (),
+        (True, True),
+        (True, True),
+        (False, False),
+        (False, False),
+    )
 
 
 def test_aux_input_status():
@@ -210,7 +261,9 @@ def test_status():
 
     # check that NONE of the compression tests are available
     for name in COMPRESSION_TESTS:
-        if name and name not in SPARK_TESTS:  # there's one test name in common between spark/compression
+        if (
+            name and name not in SPARK_TESTS
+        ):  # there's one test name in common between spark/compression
             assert not status.__dict__[name].available
             assert not status.__dict__[name].complete
 
@@ -260,8 +313,14 @@ def test_status():
 
 
 def test_single_dtc():
-    assert d.single_dtc(m("4100" + "0104")) == ("P0104", "Mass or Volume Air Flow Circuit Intermittent")
-    assert d.single_dtc(m("4100" + "4123")) == ("C0123", "")  # reverse back into correct bit-order
+    assert d.single_dtc(m("4100" + "0104")) == (
+        "P0104",
+        "Mass or Volume Air Flow Circuit Intermittent",
+    )
+    assert d.single_dtc(m("4100" + "4123")) == (
+        "C0123",
+        "",
+    )  # reverse back into correct bit-order
     assert d.single_dtc(m("4100" + "01")) is None
     assert d.single_dtc(m("4100" + "010400")) is None
 
@@ -295,14 +354,20 @@ def test_dtc():
         ("B0003", ""),
     ]
 
+
 def test_vin_message_count():
     assert d.count(m("0901")) == 0
 
+
 def test_vin():
-    assert d.encoded_string(17)(m("0201575030" + "5A5A5A39395A54" + "53333932313234")) == bytearray(b'WP0ZZZ99ZTS392124')
+    assert d.encoded_string(17)(
+        m("0201575030" + "5A5A5A39395A54" + "53333932313234")
+    ) == bytearray(b"WP0ZZZ99ZTS392124")
+
 
 def test_cvn():
-     assert d.cvn(m("6021791bc8216e0b")) == '791bc8216e'
+    assert d.cvn(m("6021791bc8216e0b")) == "791bc8216e"
+
 
 def test_monitor():
     # single test -----------------------------------------

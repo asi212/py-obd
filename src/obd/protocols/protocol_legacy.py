@@ -113,7 +113,9 @@ class LegacyProtocol(Protocol):
             # 48 6B 10 43 03 04 00 00 00 00 ck
             #             [     Data      ]
 
-            message.data = bytearray([0x43, 0x00])  # forge the mode byte and CAN's DTC_count byte
+            message.data = bytearray(
+                [0x43, 0x00]
+            )  # forge the mode byte and CAN's DTC_count byte
             for f in frames:
                 message.data += f.data[1:]
 
