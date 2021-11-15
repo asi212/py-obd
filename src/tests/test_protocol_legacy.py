@@ -7,12 +7,12 @@ LEGACY_PROTOCOLS = [
     SAE_J1850_VPW,
     ISO_9141_2,
     ISO_14230_4_5baud,
-    ISO_14230_4_fast
+    ISO_14230_4_fast,
 ]
 
 
 def check_message(m, n_frames, tx_id, data):
-    """ generic test for correct message values """
+    """generic test for correct message values"""
     assert len(m.frames) == n_frames
     assert m.tx_id == tx_id
     assert m.data == bytearray(data)
@@ -47,7 +47,7 @@ def test_single_frame():
 
 def test_hex_straining():
     """
-        If non-hex values are sent, they should be marked as ECU.UNKNOWN
+    If non-hex values are sent, they should be marked as ECU.UNKNOWN
     """
 
     for protocol_ in LEGACY_PROTOCOLS:
@@ -105,8 +105,8 @@ def test_multi_ecu():
 
 def test_multi_line():
     """
-        Tests that valid multiline messages are recombined into single
-        messages.
+    Tests that valid multiline messages are recombined into single
+    messages.
     """
 
     for protocol_ in LEGACY_PROTOCOLS:
@@ -135,8 +135,8 @@ def test_multi_line():
 
 def test_multi_line_missing_frames():
     """
-        Missing frames in a multi-frame message should drop the message.
-        Tests the contiguity check, and data length byte
+    Missing frames in a multi-frame message should drop the message.
+    Tests the contiguity check, and data length byte
     """
 
     for protocol_ in LEGACY_PROTOCOLS:
@@ -158,8 +158,8 @@ def test_multi_line_missing_frames():
 
 def test_multi_line_mode_03():
     """
-        Tests the special handling of mode 3 commands.
-        An extra byte is fudged in to make the output look like CAN
+    Tests the special handling of mode 3 commands.
+    An extra byte is fudged in to make the output look like CAN
     """
 
     for protocol_ in LEGACY_PROTOCOLS:
@@ -170,7 +170,9 @@ def test_multi_line_mode_03():
             "48 6B 10 43 06 07 08 09 0A 0B FF",
         ]
 
-        correct_data = [0x43, 0x00] + list(range(12))  # data is stitched in order received
+        correct_data = [0x43, 0x00] + list(
+            range(12)
+        )  # data is stitched in order received
         #                     ^^^^ this is an arbitrary value in the source code
 
         r = p(test_case)

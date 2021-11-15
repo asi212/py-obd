@@ -15,7 +15,9 @@ def test_list_integrity():
             assert mode == cmd.mode, "Command is in the wrong mode list: %s" % cmd.name
 
             if len(command_list) > 1:
-                assert pid_index == cmd.pid, "The index in the list must also be the PID: %s" % cmd.name
+                assert pid_index == cmd.pid, (
+                    "The index in the list must also be the PID: %s" % cmd.name
+                )
             else:
                 # lone commands in a mode are allowed to have no PID
                 assert (pid_index == cmd.pid) or (cmd.pid is None)
@@ -23,12 +25,16 @@ def test_list_integrity():
             # make sure all the fields are set
             assert cmd.name != "", "Command names must not be null"
             assert cmd.name.isupper(), "Command names must be upper case"
-            assert ' ' not in cmd.name, "No spaces allowed in command names"
+            assert " " not in cmd.name, "No spaces allowed in command names"
             assert cmd.desc != "", "Command description must not be null"
-            assert (mode >= 1) and (mode <= 9), "Mode must be in the range [1, 9] (decimal)"
-            assert (pid_index >= 0) and (pid_index <= 196), "PID must be in the range [0, 196] (decimal)"
+            assert (mode >= 1) and (
+                mode <= 9
+            ), "Mode must be in the range [1, 9] (decimal)"
+            assert (pid_index >= 0) and (
+                pid_index <= 196
+            ), "PID must be in the range [0, 196] (decimal)"
             assert cmd.bytes >= 0, "Number of return bytes must be >= 0"
-            assert hasattr(cmd.decode, '__call__'), "Decode is not callable"
+            assert hasattr(cmd.decode, "__call__"), "Decode is not callable"
 
 
 def test_unique_names():
@@ -41,7 +47,9 @@ def test_unique_names():
             if cmd is None:
                 continue  # this command is reserved
 
-            assert not names.__contains__(cmd.name), "Two commands share the same name: %s" % cmd.name
+            assert not names.__contains__(cmd.name), (
+                "Two commands share the same name: %s" % cmd.name
+            )
             names[cmd.name] = True
 
 
@@ -57,15 +65,22 @@ def test_getitem():
             if (cmd.pid is None) and (len(command_list) == 1):
                 # lone commands in a mode have no PID, and report a pid
                 # value of None, but can still be accessed by PID 0
-                error_msg = "lone command in mode %d could not be accessed through __getitem__" % cmd.mode
+                error_msg = (
+                    "lone command in mode %d could not be accessed through __getitem__"
+                    % cmd.mode
+                )
                 assert cmd == obd.commands[cmd.mode][0], error_msg
             else:
-                error_msg = "mode %d, PID %d could not be accessed through __getitem__" % (cmd.mode, cmd.pid)
+                error_msg = (
+                    "mode %d, PID %d could not be accessed through __getitem__"
+                    % (cmd.mode, cmd.pid)
+                )
                 assert cmd == obd.commands[cmd.mode][cmd.pid], error_msg
 
             # by [name]
-            assert cmd == obd.commands[cmd.name], "command name %s could not be accessed through __getitem__" % (
-                cmd.name)
+            assert (
+                cmd == obd.commands[cmd.name]
+            ), "command name %s could not be accessed through __getitem__" % (cmd.name)
 
 
 def test_contains():
@@ -93,7 +108,7 @@ def test_contains():
             assert cmd.name in obd.commands
 
     # test things NOT in the tables
-    assert 'modes' not in obd.commands
+    assert "modes" not in obd.commands
     assert not obd.commands.has_pid(-1, 0)
     assert not obd.commands.has_pid(1, -1)
 

@@ -7,15 +7,11 @@ CAN_11_PROTOCOLS = [
     ISO_15765_4_11bit_250k,
 ]
 
-CAN_29_PROTOCOLS = [
-    ISO_15765_4_29bit_500k,
-    ISO_15765_4_29bit_250k,
-    SAE_J1939
-]
+CAN_29_PROTOCOLS = [ISO_15765_4_29bit_500k, ISO_15765_4_29bit_250k, SAE_J1939]
 
 
 def check_message(m, num_frames, tx_id, data):
-    """ generic test for correct message values """
+    """generic test for correct message values"""
     assert len(m.frames) == num_frames
     assert m.tx_id == tx_id
     assert m.data == bytearray(data)
@@ -58,7 +54,7 @@ def test_single_frame():
 
 def test_hex_straining():
     """
-        If non-hex values are sent, they should be marked as ECU.UNKNOWN
+    If non-hex values are sent, they should be marked as ECU.UNKNOWN
     """
 
     for protocol_ in CAN_11_PROTOCOLS:
@@ -116,8 +112,8 @@ def test_multi_ecu():
 
 def test_multi_line():
     """
-        Tests that valid multiline messages are recombined into single
-        messages.
+    Tests that valid multiline messages are recombined into single
+    messages.
     """
 
     for protocol_ in CAN_11_PROTOCOLS:
@@ -127,7 +123,7 @@ def test_multi_line():
             "7E8 10 20 49 04 00 01 02 03",
             "7E8 21 04 05 06 07 08 09 0A",
             "7E8 22 0B 0C 0D 0E 0F 10 11",
-            "7E8 23 12 13 14 15 16 17 18"
+            "7E8 23 12 13 14 15 16 17 18",
         ]
 
         correct_data = [0x49, 0x04] + list(range(25))
@@ -147,8 +143,8 @@ def test_multi_line():
 
 def test_multi_line_missing_frames():
     """
-        Missing frames in a multi-frame message should drop the message.
-        Tests the contiguity check, and data length byte
+    Missing frames in a multi-frame message should drop the message.
+    Tests the contiguity check, and data length byte
     """
 
     for protocol_ in CAN_11_PROTOCOLS:
@@ -158,7 +154,7 @@ def test_multi_line_missing_frames():
             "7E8 10 20 49 04 00 01 02 03",
             "7E8 21 04 05 06 07 08 09 0A",
             "7E8 22 0B 0C 0D 0E 0F 10 11",
-            "7E8 23 12 13 14 15 16 17 18"
+            "7E8 23 12 13 14 15 16 17 18",
         ]
 
         for n in range(len(test_case) - 1):
@@ -171,9 +167,9 @@ def test_multi_line_missing_frames():
 
 def test_multi_line_mode_03():
     """
-        Tests the special handling of mode 3 commands.
-        Namely, Mode 03 commands have a DTC count byte that is accounted for
-        in the protocol layer.
+    Tests the special handling of mode 3 commands.
+    Namely, Mode 03 commands have a DTC count byte that is accounted for
+    in the protocol layer.
     """
 
     for protocol_ in CAN_11_PROTOCOLS:

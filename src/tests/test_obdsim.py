@@ -16,6 +16,7 @@ STANDARD_WAIT_TIME = 0.3
 def obd(request):
     """provides an OBD connection object for obdsim"""
     import obd
+
     port = request.config.getoption("--port")
     return obd.OBD(port)
 
@@ -24,14 +25,13 @@ def obd(request):
 def asynchronous(request):
     """provides an OBD *Async* connection object for obdsim"""
     import obd
+
     port = request.config.getoption("--port")
     return obd.Async(port)
 
 
 def good_rpm_response(r):
-    return (not r.is_null()) and \
-           (r.value.u == Unit.rpm) and \
-           (r.value >= 0.0 * Unit.rpm)
+    return (not r.is_null()) and (r.value.u == Unit.rpm) and (r.value >= 0.0 * Unit.rpm)
 
 
 @pytest.fixture
@@ -41,16 +41,17 @@ def skip_if_port_unspecified(request):
 
 
 def test_supports(skip_if_port_unspecified, obd):
-    assert (len(obd.supported_commands) > 0)
-    assert (obd.supports(commands.RPM))
+    assert len(obd.supported_commands) > 0
+    assert obd.supports(commands.RPM)
 
 
 def test_rpm(skip_if_port_unspecified, obd):
     r = obd.query(commands.RPM)
-    assert (good_rpm_response(r))
+    assert good_rpm_response(r)
 
 
 # Async tests
+
 
 def test_async_query(skip_if_port_unspecified, asynchronous):
     rs = []
@@ -65,8 +66,8 @@ def test_async_query(skip_if_port_unspecified, asynchronous):
     asynchronous.unwatch_all()
 
     # make sure we got data
-    assert (len(rs) > 0)
-    assert (all([good_rpm_response(r) for r in rs]))
+    assert len(rs) > 0
+    assert all([good_rpm_response(r) for r in rs])
 
 
 def test_async_callback(skip_if_port_unspecified, asynchronous):
@@ -78,12 +79,12 @@ def test_async_callback(skip_if_port_unspecified, asynchronous):
     asynchronous.unwatch_all()
 
     # make sure we got data
-    assert (len(rs) > 0)
-    assert (all([good_rpm_response(r) for r in rs]))
+    assert len(rs) > 0
+    assert all([good_rpm_response(r) for r in rs])
 
 
 def test_async_paused(skip_if_port_unspecified, asynchronous):
-    assert (not asynchronous.running)
+    assert not asynchronous.running
     asynchronous.watch(commands.RPM)
     asynchronous.start()
     assert asynchronous.running
@@ -118,12 +119,12 @@ def test_async_unwatch(skip_if_port_unspecified, asynchronous):
     asynchronous.stop()
 
     # the watched commands
-    assert (len(watched_rs) > 0)
-    assert (all([good_rpm_response(r) for r in watched_rs]))
+    assert len(watched_rs) > 0
+    assert all([good_rpm_response(r) for r in watched_rs])
 
     # the unwatched commands
-    assert (len(unwatched_rs) > 0)
-    assert (all([r.is_null() for r in unwatched_rs]))
+    assert len(unwatched_rs) > 0
+    assert all([r.is_null() for r in unwatched_rs])
 
 
 def test_async_unwatch_callback(skip_if_port_unspecified, asynchronous):
@@ -142,5 +143,5 @@ def test_async_unwatch_callback(skip_if_port_unspecified, asynchronous):
     asynchronous.stop()
     asynchronous.unwatch_all()
 
-    assert (all([good_rpm_response(r) for r in a_rs + b_rs]))
-    assert (len(a_rs) > len(b_rs))
+    assert all([good_rpm_response(r) for r in a_rs + b_rs])
+    assert len(a_rs) > len(b_rs)

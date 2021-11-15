@@ -1,16 +1,13 @@
-python-OBD
+py-OBD
 ==========
 
 A python module for handling realtime sensor data from OBD-II vehicle
 ports. Works with ELM327 OBD-II adapters, and is fit for the Raspberry
 Pi.
 
-Installation
-------------
+This module is based off of python-OBD http://github.com/brendan-w/python-OBD
 
-```Shell
-$ pip install obd
-```
+
 
 Basic Usage
 -----------
@@ -18,14 +15,15 @@ Basic Usage
 ```Python
 import obd
 
-connection = obd.OBD() # auto-connects to USB or RF port
+connection = OBD() # auto-connects to USB or RF port
 
-cmd = obd.commands.SPEED # select an OBD command (sensor)
+metrics = ['SPEED', 'RPM', 'COOLANT_TEMP', 'THROTTLE_POS'] # metrics you want to query (listed in commpands.py)
 
-response = connection.query(cmd) # send the command, and parse the response
+for i in range(len(metrics)):
+    metric = commands[metrics[i]]
+    response = connection.query(metric) # send the command, and parse the response
+    print(response.value) # returns unit-bearing values thanks to Pint
 
-print(response.value) # returns unit-bearing values thanks to Pint
-print(response.value.to("mph")) # user-friendly unit conversions
 ```
 
 Documentation
@@ -82,5 +80,6 @@ This library is forked from:
 
 -   <https://github.com/peterh/pyobd>
 -   <https://github.com/Pbartek/pyobd-pi>
+-   <https://github.com/brendan-w/python-OBD>
 
 Enjoy and drive safe!

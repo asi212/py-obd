@@ -12,8 +12,8 @@ FLOAT_EQUALS_TOLERANCE = 0.025
 
 # comparison for pint floating point values
 def float_equals(va, vb):
-    units_match = (va.u == vb.u)
-    values_match = (abs(va.magnitude - vb.magnitude) < FLOAT_EQUALS_TOLERANCE)
+    units_match = va.u == vb.u
+    values_match = abs(va.magnitude - vb.magnitude) < FLOAT_EQUALS_TOLERANCE
     return values_match and units_match
 
 
@@ -84,7 +84,9 @@ def test_0A():
     # with the scale. The last two tests here deviate from the standard
     assert float_equals(UAS_IDS[0x0A](b("0000")), 0 * Unit.millivolt)
     assert float_equals(UAS_IDS[0x0A](b("0001")), 0.122 * Unit.millivolt)
-    assert float_equals(UAS_IDS[0x0A](b("2004")), 999.912 * Unit.millivolt)  # 1000.488 mV
+    assert float_equals(
+        UAS_IDS[0x0A](b("2004")), 999.912 * Unit.millivolt
+    )  # 1000.488 mV
     assert float_equals(UAS_IDS[0x0A](b("FFFF")), 7995.27 * Unit.millivolt)  # 7999 mV
 
 
@@ -283,7 +285,9 @@ def test_28():
 def test_29():
     assert UAS_IDS[0x29](b("0000")) == 0 * Unit.pascal / Unit.second
     assert UAS_IDS[0x29](b("0004")) == 1 * Unit.pascal / Unit.second
-    assert UAS_IDS[0x29](b("FFFF")) == 16383.75 * Unit.pascal / Unit.second  # deviates from standard examples
+    assert (
+        UAS_IDS[0x29](b("FFFF")) == 16383.75 * Unit.pascal / Unit.second
+    )  # deviates from standard examples
 
 
 def test_2A():
@@ -505,11 +509,15 @@ def test_87():
 def test_8A():
     # the standard gives example values that don't line up perfectly
     # with the scale. The last two tests here deviate from the standard
-    assert float_equals(UAS_IDS[0x8A](b("8000")), -3997.696 * Unit.millivolt)  # -3999.998 mV
+    assert float_equals(
+        UAS_IDS[0x8A](b("8000")), -3997.696 * Unit.millivolt
+    )  # -3999.998 mV
     assert float_equals(UAS_IDS[0x8A](b("FFFF")), -0.122 * Unit.millivolt)
     assert float_equals(UAS_IDS[0x8A](b("0000")), 0 * Unit.millivolt)
     assert float_equals(UAS_IDS[0x8A](b("0001")), 0.122 * Unit.millivolt)
-    assert float_equals(UAS_IDS[0x8A](b("7FFF")), 3997.574 * Unit.millivolt)  # 3999.876 mV
+    assert float_equals(
+        UAS_IDS[0x8A](b("7FFF")), 3997.574 * Unit.millivolt
+    )  # 3999.876 mV
 
 
 def test_8B():
